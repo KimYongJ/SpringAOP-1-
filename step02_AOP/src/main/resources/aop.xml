@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+		
+	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>      	<!--  이부분을 반드시 넣어주어야 weaving이 자동 실행 된다 -->
+	
+	<bean id="car" class="com.spring.aop.Car"/>
+	<bean id="common" class="com.spring.common.NoticeAspect" />	
+	
+	<aop:config> <!-- 어떤 메소드를 어느 시점에 실행 할지 정해준다 -->
+		<aop:pointcut expression="execution(* com.spring.aop.Car.buy*(..))" id="buyLogic"/>
+		<aop:pointcut expression="execution(* com.spring.aop.Car.sell*(..))" id="sellLogic"/>
+		<aop:aspect ref="common">
+			<aop:before method="noticeBuyStart" pointcut-ref="buyLogic"/>
+			<aop:after method="noticeBuyEnd" pointcut-ref="buyLogic"/>
+			<aop:after-returning method="noticeReturnValue" pointcut-ref="buyLogic" returning="v"/>
+			<aop:after-throwing method="noticeSellException" pointcut-ref="sellLogic" throwing="e"/>
+		</aop:aspect>
+		
+		
+		
+		
+	</aop:config>
+
+</beans>
